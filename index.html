@@ -60,7 +60,7 @@
                     <span style="font-size:1.1rem">🧹</span>
                     <div style="text-align:left">
                         <div style="font-weight:700">Login as Operations Staff Profile</div>
-                        <div style="font-size:0.72rem;color:var(--text-muted)">Staff Access: Rooms, Housekeeping, Maintenance, Concierge</div>
+                        <div style="font-size:0.72rem;color:var(--text-muted)">Staff Access: Housekeeping, Maintenance, Concierge Desk</div>
                     </div>
                 </button>
 
@@ -127,12 +127,6 @@
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12A10 10 0 1 1 12 2v10z"></path><path d="M12 2a10 10 0 0 1 10 10h-10z"></path></svg>
                     <span>Predictive BI &amp; Pricing</span>
                     <span class="nav-badge spark-badge">AI Active</span>
-                </button>
-
-                <button class="nav-item" data-tab="rooms" data-role-req="StaffManager">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"></path><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path><path d="M9 9h1"></path><path d="M9 13h1"></path><path d="M14 9h1"></path><path d="M14 13h1"></path></svg>
-                    <span>Room Matrix &amp; Floors</span>
-                    <span class="nav-badge" id="badge-occupancy">88%</span>
                 </button>
 
                 <button class="nav-item" data-tab="bookings" data-role-req="Manager">
@@ -282,22 +276,19 @@
                 <!-- 2. Predictive BI & Dynamic Pricing Tab -->
                 <div class="tab-pane hidden" id="tab-predictive"></div>
 
-                <!-- 3. Room Matrix & Floor Plan Tab -->
-                <div class="tab-pane hidden" id="tab-rooms"></div>
-
-                <!-- 4. Bookings & Schedule Tab -->
+                <!-- 3. Bookings & Schedule Tab -->
                 <div class="tab-pane hidden" id="tab-bookings"></div>
 
-                <!-- 5. Housekeeping Dispatch Tab -->
+                <!-- 4. Housekeeping Dispatch Tab -->
                 <div class="tab-pane hidden" id="tab-housekeeping"></div>
 
-                <!-- 6. Maintenance & IoT Tab -->
+                <!-- 5. Maintenance & IoT Tab -->
                 <div class="tab-pane hidden" id="tab-maintenance"></div>
 
-                <!-- 7. Guest Services & CSAT Tab -->
+                <!-- 6. Guest Services & CSAT Tab -->
                 <div class="tab-pane hidden" id="tab-guest-services"></div>
 
-                <!-- 8. Customer / Guest Suite Portal Tab -->
+                <!-- 7. Customer / Guest Suite Portal Tab -->
                 <div class="tab-pane hidden" id="tab-customer-portal"></div>
             </div>
         </main>
@@ -320,7 +311,6 @@
     <script src="js/utils/charts.js"></script>
     <script src="js/components/overview.js"></script>
     <script src="js/components/predictive.js"></script>
-    <script src="js/components/rooms.js"></script>
     <script src="js/components/bookings.js"></script>
     <script src="js/components/housekeeping.js"></script>
     <script src="js/components/maintenance.js"></script>

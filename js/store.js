@@ -220,7 +220,7 @@ class HotelStore {
         const role = this.state.currentUser.role;
 
         if (role === "Manager") return true;
-        if (role === "Staff") return ['rooms', 'housekeeping', 'maintenance', 'guest-services'].includes(tabId);
+        if (role === "Staff") return ['housekeeping', 'maintenance', 'guest-services'].includes(tabId);
         if (role === "Customer") return ['customer-portal'].includes(tabId);
 
         return false;
