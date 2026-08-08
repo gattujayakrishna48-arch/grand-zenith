@@ -325,7 +325,8 @@ class AppController {
         const titles = {
             'overview': 'Executive BI Overview',
             'predictive': 'Predictive BI & Dynamic Pricing Engine',
-            'rooms': 'Rooms & Floors Matrix',
+            'rooms': 'Room Occupancy Matrix',
+            'floors': 'Floor Plans & Level Architecture',
             'bookings': 'Bookings & Schedule Timeline',
             'housekeeping': 'Housekeeping Operations Dispatch',
             'maintenance': 'Facility Maintenance & IoT Sensors',
@@ -364,6 +365,9 @@ class AppController {
                 break;
             case 'rooms':
                 window.roomsComponent.render(container);
+                break;
+            case 'floors':
+                window.floorsComponent.render(container);
                 break;
             case 'bookings':
                 window.bookingsComponent.render(container);

@@ -1,28 +1,20 @@
 /* ==========================================================================
-   GRAND ZENITH SMART HOTEL DASHBOARD - ROOMS & FLOORS MATRIX COMPONENT
+   GRAND ZENITH SMART HOTEL DASHBOARD - ROOM MATRIX COMPONENT
    ========================================================================== */
 
 class RoomsComponent {
     constructor() {
-        this.selectedFloor = "all";
         this.selectedStatus = "all";
         this.searchQuery = "";
     }
 
-    setFloor(floorNum) {
-        this.selectedFloor = floorNum.toString();
-        const container = document.getElementById('tab-rooms');
-        if (container) this.render(container);
-    }
-
     setStatus(statusName) {
-        this.selectedStatus = statusName.toString();
+        this.selectedStatus = statusName.toString().toLowerCase();
         const container = document.getElementById('tab-rooms');
         if (container) this.render(container);
     }
 
     resetFilters() {
-        this.selectedFloor = "all";
         this.selectedStatus = "all";
         this.searchQuery = "";
         const searchInput = document.getElementById('global-search');
@@ -36,16 +28,6 @@ class RoomsComponent {
         const fmt = (val) => window.store.formatCurrency(val);
         const rooms = state.rooms || [];
 
-        // Exact Floor Counts
-        const floorCounts = {
-            all: rooms.length,
-            1: rooms.filter(r => r.floor === 1).length,
-            2: rooms.filter(r => r.floor === 2).length,
-            3: rooms.filter(r => r.floor === 3).length,
-            4: rooms.filter(r => r.floor === 4).length,
-            5: rooms.filter(r => r.floor === 5).length
-        };
-
         // Exact Status Counts
         const statusCounts = {
             all: rooms.length,
@@ -56,16 +38,11 @@ class RoomsComponent {
             reserved: rooms.filter(r => r.status === "Reserved").length
         };
 
-        // Comprehensive Filtering
-        const currentFloor = this.selectedFloor.toString();
+        // Filtering
         const currentStatus = this.selectedStatus.toString().toLowerCase();
         const query = (this.searchQuery || "").toLowerCase().trim();
 
         const filtered = rooms.filter(room => {
-            // 1. Floor match
-            const matchesFloor = currentFloor === "all" || room.floor.toString() === currentFloor;
-
-            // 2. Status match
             let matchesStatus = true;
             if (currentStatus === "occupied") matchesStatus = (room.status === "Occupied");
             else if (currentStatus === "clean") matchesStatus = (room.status === "Clean" || (room.clean === "Clean" && room.status !== "Occupied"));
@@ -73,100 +50,54 @@ class RoomsComponent {
             else if (currentStatus === "maintenance") matchesStatus = (room.status === "Maintenance");
             else if (currentStatus === "reserved") matchesStatus = (room.status === "Reserved");
 
-            // 3. Search match
             const matchesSearch = !query || 
                 room.id.includes(query) || 
                 (room.guest && room.guest.toLowerCase().includes(query)) ||
-                room.type.toLowerCase().includes(query) ||
-                `floor ${room.floor}`.includes(query);
+                room.type.toLowerCase().includes(query);
 
-            return matchesFloor && matchesStatus && matchesSearch;
+            return matchesStatus && matchesSearch;
         });
 
-        // Floor Labels
-        const floorLabels = {
-            "all": "All Resort Floors (Floors 1 - 5)",
-            "1": "Floor 1 • Garden Deluxe Suites",
-            "2": "Floor 2 • Executive Ocean Suites",
-            "3": "Floor 3 • Superior King Suites",
-            "4": "Floor 4 • Oceanfront Penthouses",
-            "5": "Floor 5 • Presidential Royal Villas"
-        };
-
         container.innerHTML = `
-            <!-- Top Filter Control Panel -->
+            <!-- Top Status Filter Panel -->
             <div class="glass-card" style="padding:1.25rem" id="rooms-filter-panel">
-                <div style="display:flex;flex-direction:column;gap:1.1rem">
-                    
-                    <!-- Row 1: Floor Selection Bar -->
-                    <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
-                        <span style="font-size:0.78rem;font-weight:700;color:var(--gold-primary);letter-spacing:0.06em;min-width:110px;display:flex;align-items:center;gap:0.3rem">
-                            🏢 FLOOR SELECT:
-                        </span>
-                        <div class="floor-filter-bar" style="flex:1">
-                            <button type="button" class="filter-chip ${currentFloor === 'all' ? 'active' : ''}" data-floor-btn="all">
-                                All Floors (${floorCounts.all})
-                            </button>
-                            <button type="button" class="filter-chip ${currentFloor === '1' ? 'active' : ''}" data-floor-btn="1">
-                                Floor 1 - Garden (${floorCounts[1]})
-                            </button>
-                            <button type="button" class="filter-chip ${currentFloor === '2' ? 'active' : ''}" data-floor-btn="2">
-                                Floor 2 - Executive (${floorCounts[2]})
-                            </button>
-                            <button type="button" class="filter-chip ${currentFloor === '3' ? 'active' : ''}" data-floor-btn="3">
-                                Floor 3 - Superior (${floorCounts[3]})
-                            </button>
-                            <button type="button" class="filter-chip ${currentFloor === '4' ? 'active' : ''}" data-floor-btn="4">
-                                Floor 4 - Penthouse (${floorCounts[4]})
-                            </button>
-                            <button type="button" class="filter-chip ${currentFloor === '5' ? 'active' : ''}" data-floor-btn="5">
-                                Floor 5 - Royal Villa (${floorCounts[5]})
-                            </button>
-                        </div>
+                <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
+                    <span style="font-size:0.78rem;font-weight:700;color:var(--gold-primary);letter-spacing:0.06em;min-width:110px;display:flex;align-items:center;gap:0.3rem">
+                        🏷️ ROOM STATUS:
+                    </span>
+                    <div class="floor-filter-bar" style="flex:1">
+                        <button type="button" class="filter-chip ${currentStatus === 'all' ? 'active' : ''}" data-status-btn="all">
+                            All Rooms (${statusCounts.all})
+                        </button>
+                        <button type="button" class="filter-chip ${currentStatus === 'occupied' ? 'active' : ''}" data-status-btn="occupied">
+                            Occupied (${statusCounts.occupied})
+                        </button>
+                        <button type="button" class="filter-chip ${currentStatus === 'clean' ? 'active' : ''}" data-status-btn="clean">
+                            Clean Ready (${statusCounts.clean})
+                        </button>
+                        <button type="button" class="filter-chip ${currentStatus === 'dirty' ? 'active' : ''}" data-status-btn="dirty">
+                            Dirty Turnaround (${statusCounts.dirty})
+                        </button>
+                        <button type="button" class="filter-chip ${currentStatus === 'maintenance' ? 'active' : ''}" data-status-btn="maintenance">
+                            Maintenance (${statusCounts.maintenance})
+                        </button>
+                        <button type="button" class="filter-chip ${currentStatus === 'reserved' ? 'active' : ''}" data-status-btn="reserved">
+                            Reserved (${statusCounts.reserved})
+                        </button>
                     </div>
-
-                    <!-- Row 2: Status Selection Bar -->
-                    <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
-                        <span style="font-size:0.78rem;font-weight:700;color:var(--text-gold);letter-spacing:0.06em;min-width:110px;display:flex;align-items:center;gap:0.3rem">
-                            🏷️ STATUS FILTER:
-                        </span>
-                        <div class="floor-filter-bar" style="flex:1">
-                            <button type="button" class="filter-chip ${currentStatus === 'all' ? 'active' : ''}" data-status-btn="all">
-                                All Statuses (${statusCounts.all})
-                            </button>
-                            <button type="button" class="filter-chip ${currentStatus === 'occupied' ? 'active' : ''}" data-status-btn="occupied">
-                                Occupied (${statusCounts.occupied})
-                            </button>
-                            <button type="button" class="filter-chip ${currentStatus === 'clean' ? 'active' : ''}" data-status-btn="clean">
-                                Clean Ready (${statusCounts.clean})
-                            </button>
-                            <button type="button" class="filter-chip ${currentStatus === 'dirty' ? 'active' : ''}" data-status-btn="dirty">
-                                Dirty Turnaround (${statusCounts.dirty})
-                            </button>
-                            <button type="button" class="filter-chip ${currentStatus === 'maintenance' ? 'active' : ''}" data-status-btn="maintenance">
-                                Maintenance (${statusCounts.maintenance})
-                            </button>
-                            <button type="button" class="filter-chip ${currentStatus === 'reserved' ? 'active' : ''}" data-status-btn="reserved">
-                                Reserved (${statusCounts.reserved})
-                            </button>
-                        </div>
-                    </div>
-
                 </div>
             </div>
 
             <!-- Active Header Bar -->
             <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg-glass-card);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:0.85rem 1.25rem">
                 <div>
-                    <h3 style="font-size:1.15rem;color:var(--text-primary)">${floorLabels[currentFloor] || 'Resort Suites Matrix'}</h3>
-                    <span style="font-size:0.8rem;color:var(--text-muted)">Showing ${filtered.length} of ${rooms.length} Suites</span>
+                    <h3 style="font-size:1.15rem;color:var(--text-primary)">Resort Suite Occupancy Matrix</h3>
+                    <span style="font-size:0.8rem;color:var(--text-muted)">Displaying ${filtered.length} of ${rooms.length} Suites</span>
                 </div>
 
-                <div style="display:flex;gap:0.5rem">
-                    ${currentFloor !== 'all' || currentStatus !== 'all' || query ? `
-                        <button type="button" class="btn btn-secondary btn-sm" id="btn-reset-filters-top">✕ Reset Filters</button>
-                    ` : ''}
-                </div>
+                ${currentStatus !== 'all' || query ? `
+                    <button type="button" class="btn btn-secondary btn-sm" id="btn-reset-rooms-filters">✕ Reset Filters</button>
+                ` : ''}
             </div>
 
             <!-- Room Grid Matrix -->
@@ -214,50 +145,25 @@ class RoomsComponent {
                         </div>
                     </div>
                 `).join('')}
-
-                ${filtered.length === 0 ? `
-                    <div style="grid-column: 1 / -1; background:var(--bg-glass-card); border:1px dashed var(--border-medium); border-radius:var(--radius-lg); padding:3rem; text-align:center">
-                        <div style="font-size:2.2rem;margin-bottom:0.5rem">🏨</div>
-                        <h3>No Suites Match the Selected Criteria</h3>
-                        <p style="color:var(--text-muted);font-size:0.85rem;margin-top:0.25rem">Try switching floor levels or clearing active filters.</p>
-                        <button type="button" class="btn btn-gold btn-sm" id="btn-reset-filters-empty" style="margin-top:1rem">Show All Suites</button>
-                    </div>
-                ` : ''}
             </div>
         `;
 
-        // Event Delegation for Filter Buttons
+        // Event Delegation
         const filterPanel = container.querySelector('#rooms-filter-panel');
         if (filterPanel) {
             filterPanel.addEventListener('click', (e) => {
-                const floorBtn = e.target.closest('[data-floor-btn]');
-                if (floorBtn) {
-                    const floorVal = floorBtn.dataset.floorBtn;
-                    this.setFloor(floorVal);
-                    return;
-                }
-
                 const statusBtn = e.target.closest('[data-status-btn]');
                 if (statusBtn) {
-                    const statusVal = statusBtn.dataset.statusBtn;
-                    this.setStatus(statusVal);
-                    return;
+                    this.setStatus(statusBtn.dataset.statusBtn);
                 }
             });
         }
 
-        // Reset Filter Buttons
-        const resetTop = container.querySelector('#btn-reset-filters-top');
-        if (resetTop) {
-            resetTop.addEventListener('click', () => this.resetFilters());
+        const resetBtn = container.querySelector('#btn-reset-rooms-filters');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => this.resetFilters());
         }
 
-        const resetEmpty = container.querySelector('#btn-reset-filters-empty');
-        if (resetEmpty) {
-            resetEmpty.addEventListener('click', () => this.resetFilters());
-        }
-
-        // Room Grid Event Handlers
         const grid = container.querySelector('#room-cards-grid');
         if (grid) {
             grid.addEventListener('click', (e) => {
@@ -282,7 +188,6 @@ class RoomsComponent {
                     return;
                 }
 
-                // Click anywhere on room card
                 const roomCard = e.target.closest('.room-card');
                 if (roomCard) {
                     const roomId = roomCard.dataset.roomId;
@@ -293,5 +198,4 @@ class RoomsComponent {
     }
 }
 
-// Instantiate Component
 window.roomsComponent = new RoomsComponent();
