@@ -18,6 +18,7 @@ class AppController {
         this.setupThemeToggle();
         this.setupNotifications();
         this.setupModals();
+        this.setupGlobalSearch();
         
         // Listen to store events
         window.store.subscribe((event, data) => {
@@ -183,7 +184,7 @@ class AppController {
         });
 
         // Switch to initial tab based on profile
-        const initialTab = user.role === "Manager" ? 'overview' : user.role === "Staff" ? 'housekeeping' : 'customer-portal';
+        const initialTab = user.role === "Manager" ? 'overview' : user.role === "Staff" ? 'rooms' : 'customer-portal';
         this.switchTab(initialTab);
         this.updateSidebarBadges();
     }
@@ -324,6 +325,7 @@ class AppController {
         const titles = {
             'overview': 'Executive BI Overview',
             'predictive': 'Predictive BI & Dynamic Pricing Engine',
+            'rooms': 'Rooms & Floors Matrix',
             'bookings': 'Bookings & Schedule Timeline',
             'housekeeping': 'Housekeeping Operations Dispatch',
             'maintenance': 'Facility Maintenance & IoT Sensors',
@@ -359,6 +361,9 @@ class AppController {
                 break;
             case 'predictive':
                 window.predictiveComponent.render(container);
+                break;
+            case 'rooms':
+                window.roomsComponent.render(container);
                 break;
             case 'bookings':
                 window.bookingsComponent.render(container);
@@ -399,6 +404,21 @@ class AppController {
         };
         updateTime();
         setInterval(updateTime, 1000);
+    }
+
+    setupGlobalSearch() {
+        const input = document.getElementById('global-search');
+        if (input) {
+            input.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase().trim();
+                if (window.roomsComponent) {
+                    window.roomsComponent.searchQuery = query;
+                    if (this.currentTab === 'rooms') {
+                        window.roomsComponent.render(document.getElementById('tab-rooms'));
+                    }
+                }
+            });
+        }
     }
 
     setupNotifications() {
