@@ -35,8 +35,8 @@ class AppController {
             }
         });
 
-        // Initialize App on Login Screen landing page
-        this.onUserLoggedOut();
+        // Default: Auto-login as Executive Manager so dashboard loads immediately
+        window.store.login("Manager", "Alexandra Vance");
         this.startRealtimeSimulation();
     }
 
@@ -199,6 +199,7 @@ class AppController {
     onUserLoggedOut() {
         document.getElementById('app-container').classList.add('hidden');
         document.getElementById('login-screen').classList.remove('hidden');
+        this.showToast("👋 Signed out. Returned to Login Screen.", "info");
     }
 
     // Modal: Edit User Profile & Switch Account
