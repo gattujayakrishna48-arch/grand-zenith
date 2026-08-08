@@ -35,8 +35,8 @@ class AppController {
             }
         });
 
-        // Default: Auto-login as Manager with initial preview name
-        window.store.login("Manager", "Alexandra Vance");
+        // Initialize App on Login Screen landing page
+        this.onUserLoggedOut();
         this.startRealtimeSimulation();
     }
 
@@ -66,21 +66,21 @@ class AppController {
         document.getElementById('btn-login-manager').addEventListener('click', () => {
             const name = getCustomName() || "Alexandra Vance";
             window.store.login("Manager", name);
-            this.showToast(`👑 Profile Opened: ${name} (General Manager)`, "success");
+            this.showToast(`👑 Welcome, ${name}! Signed in as Executive Manager`, "success");
         });
 
         // Profile 2: Operations Staff Login
         document.getElementById('btn-login-staff').addEventListener('click', () => {
             const name = getCustomName() || "Jean-Luc Dubois";
             window.store.login("Staff", name);
-            this.showToast(`🧹 Profile Opened: ${name} (Operations Staff)`, "info");
+            this.showToast(`🧹 Welcome, ${name}! Signed in as Operations Staff`, "info");
         });
 
         // Profile 3: Customer / Guest Login
         document.getElementById('btn-login-customer').addEventListener('click', () => {
             const name = getCustomName() || "Lord Jonathan Sterling";
             window.store.login("Customer", name);
-            this.showToast(`🏨 Profile Opened: ${name} (Guest Suite 101)`, "success");
+            this.showToast(`🏨 Welcome, ${name}! Opened Guest Suite 101 Portal`, "success");
         });
 
         // Form Manual Login
@@ -89,7 +89,7 @@ class AppController {
             const name = getCustomName();
             const role = document.getElementById('login-role-select').value;
             window.store.login(role, name);
-            this.showToast(`✨ Profile Opened for ${name || role}`, "success");
+            this.showToast(`✨ Welcome! Authenticated as ${role}`, "success");
         });
 
         // Sign Out Buttons
@@ -174,7 +174,6 @@ class AppController {
     onUserLoggedOut() {
         document.getElementById('app-container').classList.add('hidden');
         document.getElementById('login-screen').classList.remove('hidden');
-        this.showToast("👋 Signed out of profile session.", "info");
     }
 
     // Modal: Edit User Profile & Switch Account
