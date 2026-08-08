@@ -56,6 +56,31 @@ class AppController {
         this.renderCurrentTab();
     }
 
+    setupThemeToggle() {
+        const select = document.getElementById('theme-select');
+        if (select) {
+            select.value = this.theme;
+            select.addEventListener('change', (e) => {
+                const themeVal = e.target.value;
+                this.setTheme(themeVal);
+            });
+        }
+    }
+
+    setTheme(themeName) {
+        this.theme = themeName;
+        document.documentElement.setAttribute('data-theme', themeName);
+        
+        const labels = {
+            'dark': '🌙 Obsidian Gold (Dark)',
+            'light': '☀️ Royal Ivory (Light)',
+            'ocean': '🌊 Monaco Ocean (Sapphire)'
+        };
+        
+        this.showToast(`🎨 Theme changed to ${labels[themeName] || themeName}`, "info");
+        this.renderCurrentTab();
+    }
+
     setupAuthHandlers() {
         const getCustomName = () => {
             const input = document.getElementById('custom-user-name');
@@ -199,6 +224,15 @@ class AppController {
                 </div>
 
                 <div class="form-group" style="background:var(--bg-surface-elevated);padding:0.9rem;border-radius:var(--radius-md);margin-bottom:1.25rem">
+                    <label class="form-label">Select Dashboard Theme Palette:</label>
+                    <select id="modal-theme-select" class="form-select" style="margin-top:0.4rem">
+                        <option value="dark" ${this.theme === 'dark' ? 'selected' : ''}>🌙 Obsidian Gold (Dark)</option>
+                        <option value="light" ${this.theme === 'light' ? 'selected' : ''}>☀️ Royal Ivory (Light)</option>
+                        <option value="ocean" ${this.theme === 'ocean' ? 'selected' : ''}>🌊 Monaco Ocean (Sapphire)</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="background:var(--bg-surface-elevated);padding:0.9rem;border-radius:var(--radius-md);margin-bottom:1.25rem">
                     <label class="form-label">Switch Active Profile Role Tier:</label>
                     <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:0.5rem;margin-top:0.4rem">
                         <button type="button" class="btn btn-secondary btn-sm ${user.role === 'Manager' ? 'btn-gold' : ''}" id="profile-switch-manager">👑 Manager</button>
@@ -218,6 +252,16 @@ class AppController {
         `;
 
         this.openModal(html);
+
+        // Theme select listener inside modal
+        const modalThemeSelect = document.getElementById('modal-theme-select');
+        if (modalThemeSelect) {
+            modalThemeSelect.addEventListener('change', (e) => {
+                this.setTheme(e.target.value);
+                const topbarSelect = document.getElementById('theme-select');
+                if (topbarSelect) topbarSelect.value = e.target.value;
+            });
+        }
 
         // Save profile
         document.getElementById('form-edit-user-profile').addEventListener('submit', (e) => {
@@ -359,15 +403,6 @@ class AppController {
         };
         updateTime();
         setInterval(updateTime, 1000);
-    }
-
-    setupThemeToggle() {
-        const btn = document.getElementById('theme-toggle-btn');
-        btn.addEventListener('click', () => {
-            this.theme = this.theme === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', this.theme);
-            this.showToast(`Switched to ${this.theme.toUpperCase()} Theme`, "info");
-        });
     }
 
     setupNotifications() {

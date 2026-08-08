@@ -1,10 +1,13 @@
 /* ==========================================================================
    GRAND ZENITH SMART HOTEL DASHBOARD - DESIGN SYSTEM & ANIMATED STYLES
-   Theme: Luxury Obsidian Slate & Gold / Glassmorphism UI
+   Theme Palette Engine: 
+   1. [data-theme="dark"]  - Obsidian Gold (Luxury Dark)
+   2. [data-theme="light"] - Royal Ivory & Champagne (Clean Light)
+   3. [data-theme="ocean"] - Monaco Sapphire Ocean (Deep Riviera Navy)
    ========================================================================== */
 
-:root {
-    /* Color Palette - Dark Theme (Default) */
+:root, [data-theme="dark"] {
+    /* 1. OBSIDIAN GOLD THEME (DARK DEFAULT) */
     --bg-base: #07090E;
     --bg-surface: #0F172A;
     --bg-surface-elevated: rgba(30, 41, 59, 0.7);
@@ -38,16 +41,6 @@
     --purple-primary: #A855F7;
     --purple-glow: rgba(168, 85, 247, 0.3);
 
-    --indigo-primary: #6366F1;
-
-    /* Status Colors */
-    --status-occupied: #F59E0B;
-    --status-clean: #10B981;
-    --status-dirty: #F43F5E;
-    --status-maintenance: #EC4899;
-    --status-reserved: #06B6D4;
-
-    /* Shadows & Effects */
     --shadow-sm: 0 2px 4px rgba(0,0,0,0.2);
     --shadow-md: 0 4px 20px rgba(0,0,0,0.35);
     --shadow-lg: 0 12px 35px rgba(0,0,0,0.6);
@@ -63,24 +56,58 @@
     --transition-normal: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* 2. ROYAL IVORY & CHAMPAGNE (LIGHT THEME) */
 [data-theme="light"] {
-    --bg-base: #F1F5F9;
+    --bg-base: #F8F6F0;
     --bg-surface: #FFFFFF;
-    --bg-surface-elevated: rgba(241, 245, 249, 0.8);
-    --bg-glass: rgba(255, 255, 255, 0.85);
-    --bg-glass-card: rgba(255, 255, 255, 0.9);
+    --bg-surface-elevated: rgba(241, 245, 249, 0.85);
+    --bg-glass: rgba(255, 255, 255, 0.9);
+    --bg-glass-card: rgba(255, 255, 255, 0.95);
 
-    --border-subtle: rgba(0, 0, 0, 0.08);
-    --border-medium: rgba(0, 0, 0, 0.15);
-    --border-accent: rgba(217, 119, 6, 0.4);
+    --border-subtle: rgba(0, 0, 0, 0.09);
+    --border-medium: rgba(0, 0, 0, 0.16);
+    --border-accent: rgba(217, 119, 6, 0.45);
 
     --text-primary: #0F172A;
     --text-secondary: #475569;
-    --text-muted: #94A3B8;
+    --text-muted: #64748B;
     --text-gold: #B45309;
 
-    --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
-    --shadow-lg: 0 10px 30px rgba(0,0,0,0.1);
+    --gold-primary: #D97706;
+    --gold-hover: #B45309;
+    --gold-glow: rgba(217, 119, 6, 0.25);
+
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+    --shadow-lg: 0 10px 30px rgba(0,0,0,0.12);
+    --shadow-glow: 0 0 20px rgba(217, 119, 6, 0.15);
+}
+
+/* 3. MONACO SAPPHIRE OCEAN (DARK BLUE THEME) */
+[data-theme="ocean"] {
+    --bg-base: #030712;
+    --bg-surface: #0B1528;
+    --bg-surface-elevated: rgba(15, 23, 42, 0.8);
+    --bg-glass: rgba(11, 21, 40, 0.85);
+    --bg-glass-card: rgba(15, 30, 56, 0.75);
+
+    --border-subtle: rgba(6, 182, 212, 0.15);
+    --border-medium: rgba(6, 182, 212, 0.28);
+    --border-accent: rgba(6, 182, 212, 0.5);
+
+    --text-primary: #F0F9FF;
+    --text-secondary: #7DD3FC;
+    --text-muted: #38BDF8;
+    --text-gold: #38BDF8;
+
+    --gold-primary: #06B6D4;
+    --gold-hover: #0891B2;
+    --gold-glow: rgba(6, 182, 212, 0.35);
+
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 20px rgba(3, 105, 161, 0.2);
+    --shadow-lg: 0 12px 35px rgba(0,0,0,0.7);
+    --shadow-glow: 0 0 25px rgba(6, 182, 212, 0.25);
 }
 
 /* Base Resets */
@@ -97,6 +124,7 @@ body {
     overflow-x: hidden;
     min-height: 100vh;
     line-height: 1.5;
+    transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -158,12 +186,6 @@ h1, h2, h3, h4, h5, h6 {
     0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
     70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
     100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-}
-
-@keyframes floatCard {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-3px); }
-    100% { transform: translateY(0px); }
 }
 
 /* ==========================================================================
@@ -346,6 +368,7 @@ h1, h2, h3, h4, h5, h6 {
     top: 0;
     height: 100vh;
     z-index: 50;
+    transition: background-color var(--transition-normal);
 }
 
 .sidebar-brand {
@@ -574,6 +597,7 @@ h1, h2, h3, h4, h5, h6 {
     flex-direction: column;
     min-width: 0;
     background: var(--bg-base);
+    transition: background-color var(--transition-normal);
 }
 
 /* Topbar */
@@ -589,6 +613,7 @@ h1, h2, h3, h4, h5, h6 {
     position: sticky;
     top: 0;
     z-index: 40;
+    transition: background-color var(--transition-normal);
 }
 
 .topbar-left {
@@ -1025,17 +1050,6 @@ h1, h2, h3, h4, h5, h6 {
     overflow: hidden;
 }
 
-.ai-briefing-banner::after {
-    content: '';
-    position: absolute;
-    right: -40px;
-    top: -40px;
-    width: 150px;
-    height: 150px;
-    background: radial-gradient(circle, rgba(168, 85, 247, 0.25), transparent 70%);
-    pointer-events: none;
-}
-
 .ai-badge {
     display: inline-flex;
     align-items: center;
@@ -1239,59 +1253,6 @@ h1, h2, h3, h4, h5, h6 {
 
 .custom-table tbody tr:hover {
     background: var(--bg-surface-elevated);
-}
-
-/* Kanban Board */
-.kanban-board {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-}
-
-.kanban-col {
-    background: var(--bg-glass-card);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-lg);
-    padding: 1.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    min-height: 450px;
-}
-
-.kanban-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid var(--border-subtle);
-}
-
-.kanban-title {
-    font-size: 0.95rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.kanban-card {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    cursor: grab;
-    transition: all var(--transition-normal);
-    animation: fadeInUp 0.3s ease;
-}
-
-.kanban-card:hover {
-    border-color: var(--gold-primary);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
 }
 
 /* Modals */
