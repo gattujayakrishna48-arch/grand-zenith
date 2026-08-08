@@ -13,51 +13,137 @@ class RoomsComponent {
         const state = window.store.getState();
         const fmt = (val) => window.store.formatCurrency(val);
         
-        // Filter logic
+        // Calculate counts per floor
+        const floorCounts = {
+            all: state.rooms.length,
+            1: state.rooms.filter(r => r.floor === 1).length,
+            2: state.rooms.filter(r => r.floor === 2).length,
+            3: state.rooms.filter(r => r.floor === 3).length,
+            4: state.rooms.filter(r => r.floor === 4).length,
+            5: state.rooms.filter(r => r.floor === 5).length
+        };
+
+        // Calculate counts per status
+        const statusCounts = {
+            all: state.rooms.length,
+            occupied: state.rooms.filter(r => r.status === "Occupied").length,
+            clean: state.rooms.filter(r => r.status === "Clean" || r.clean === "Clean").length,
+            dirty: state.rooms.filter(r => r.clean === "Dirty").length,
+            maintenance: state.rooms.filter(r => r.status === "Maintenance").length,
+            reserved: state.rooms.filter(r => r.status === "Reserved").length
+        };
+
+        // Comprehensive filter logic
         let filtered = state.rooms.filter(room => {
-            const matchesFloor = this.selectedFloor === "all" || room.floor.toString() === this.selectedFloor;
-            const matchesStatus = this.selectedStatus === "all" || room.status.toLowerCase() === this.selectedStatus.toLowerCase();
-            const matchesSearch = !this.searchQuery || 
-                room.id.includes(this.searchQuery) || 
-                (room.guest && room.guest.toLowerCase().includes(this.searchQuery.toLowerCase())) ||
-                room.type.toLowerCase().includes(this.searchQuery.toLowerCase());
+            // Floor filter
+            const matchesFloor = this.selectedFloor === "all" || room.floor.toString() === this.selectedFloor.toString();
+            
+            // Status filter
+            let matchesStatus = true;
+            if (this.selectedStatus === "occupied") matchesStatus = room.status === "Occupied";
+            else if (this.selectedStatus === "clean") matchesStatus = room.status === "Clean" || (room.clean === "Clean" && room.status !== "Occupied");
+            else if (this.selectedStatus === "dirty") matchesStatus = room.clean === "Dirty" || room.status === "Dirty";
+            else if (this.selectedStatus === "maintenance") matchesStatus = room.status === "Maintenance";
+            else if (this.selectedStatus === "reserved") matchesStatus = room.status === "Reserved";
+
+            // Search query filter
+            const q = (this.searchQuery || "").toLowerCase().trim();
+            const matchesSearch = !q || 
+                room.id.includes(q) || 
+                (room.guest && room.guest.toLowerCase().includes(q)) ||
+                room.type.toLowerCase().includes(q) ||
+                `floor ${room.floor}`.includes(q);
             
             return matchesFloor && matchesStatus && matchesSearch;
         });
 
+        // Floor Name Map
+        const floorNames = {
+            all: "All Hotel Floors (Floors 1 - 5)",
+            1: "Floor 1 - Garden Deluxe Suites",
+            2: "Floor 2 - Executive Ocean Suites",
+            3: "Floor 3 - Superior King Floor",
+            4: "Floor 4 - Oceanfront Penthouse Suites",
+            5: "Floor 5 - Presidential Royal Villas"
+        };
+
         container.innerHTML = `
-            <!-- Top Controls Bar -->
-            <div class="glass-card" style="padding:1rem 1.25rem">
-                <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap">
-                    <!-- Floor Tabs -->
-                    <div class="floor-filter-bar">
-                        <button class="filter-chip ${this.selectedFloor === 'all' ? 'active' : ''}" data-floor="all">All Floors (5)</button>
-                        <button class="filter-chip ${this.selectedFloor === '1' ? 'active' : ''}" data-floor="1">Floor 1 (Garden)</button>
-                        <button class="filter-chip ${this.selectedFloor === '2' ? 'active' : ''}" data-floor="2">Floor 2 (Executive)</button>
-                        <button class="filter-chip ${this.selectedFloor === '3' ? 'active' : ''}" data-floor="3">Floor 3 (Superior)</button>
-                        <button class="filter-chip ${this.selectedFloor === '4' ? 'active' : ''}" data-floor="4">Floor 4 (Penthouse)</button>
-                        <button class="filter-chip ${this.selectedFloor === '5' ? 'active' : ''}" data-floor="5">Floor 5 (Royal Villa)</button>
+            <!-- Top Filter Control Panel -->
+            <div class="glass-card" style="padding:1.25rem">
+                <div style="display:flex;flex-direction:column;gap:1rem">
+                    
+                    <!-- Row 1: Floor Tabs Filter -->
+                    <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
+                        <span style="font-size:0.75rem;font-weight:700;color:var(--text-gold);letter-spacing:0.06em;min-width:90px">🏢 FLOOR SELECT:</span>
+                        <div class="floor-filter-bar" style="flex:1">
+                            <button class="filter-chip ${this.selectedFloor === 'all' ? 'active' : ''}" data-floor="all">
+                                All Floors (${floorCounts.all})
+                            </button>
+                            <button class="filter-chip ${this.selectedFloor === '1' ? 'active' : ''}" data-floor="1">
+                                Floor 1 - Garden (${floorCounts[1]})
+                            </button>
+                            <button class="filter-chip ${this.selectedFloor === '2' ? 'active' : ''}" data-floor="2">
+                                Floor 2 - Executive (${floorCounts[2]})
+                            </button>
+                            <button class="filter-chip ${this.selectedFloor === '3' ? 'active' : ''}" data-floor="3">
+                                Floor 3 - Superior (${floorCounts[3]})
+                            </button>
+                            <button class="filter-chip ${this.selectedFloor === '4' ? 'active' : ''}" data-floor="4">
+                                Floor 4 - Penthouse (${floorCounts[4]})
+                            </button>
+                            <button class="filter-chip ${this.selectedFloor === '5' ? 'active' : ''}" data-floor="5">
+                                Floor 5 - Royal Villas (${floorCounts[5]})
+                            </button>
+                        </div>
                     </div>
 
-                    <!-- Status Filter Chips -->
-                    <div class="floor-filter-bar">
-                        <button class="filter-chip ${this.selectedStatus === 'all' ? 'active' : ''}" data-status="all">All Statuses</button>
-                        <button class="filter-chip ${this.selectedStatus === 'occupied' ? 'active' : ''}" data-status="occupied">Occupied (${state.metrics.occupiedCount})</button>
-                        <button class="filter-chip ${this.selectedStatus === 'clean' ? 'active' : ''}" data-status="clean">Clean (${state.metrics.cleanCount})</button>
-                        <button class="filter-chip ${this.selectedStatus === 'dirty' ? 'active' : ''}" data-status="dirty">Dirty (${state.metrics.dirtyCount})</button>
-                        <button class="filter-chip ${this.selectedStatus === 'maintenance' ? 'active' : ''}" data-status="maintenance">Maintenance (${state.metrics.outOfOrderCount})</button>
+                    <!-- Row 2: Status Chips Filter -->
+                    <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
+                        <span style="font-size:0.75rem;font-weight:700;color:var(--text-gold);letter-spacing:0.06em;min-width:90px">🏷️ ROOM STATUS:</span>
+                        <div class="floor-filter-bar" style="flex:1">
+                            <button class="filter-chip ${this.selectedStatus === 'all' ? 'active' : ''}" data-status="all">
+                                All Statuses (${statusCounts.all})
+                            </button>
+                            <button class="filter-chip ${this.selectedStatus === 'occupied' ? 'active' : ''}" data-status="occupied">
+                                Occupied (${statusCounts.occupied})
+                            </button>
+                            <button class="filter-chip ${this.selectedStatus === 'clean' ? 'active' : ''}" data-status="clean">
+                                Clean (${statusCounts.clean})
+                            </button>
+                            <button class="filter-chip ${this.selectedStatus === 'dirty' ? 'active' : ''}" data-status="dirty">
+                                Dirty / Turnaround (${statusCounts.dirty})
+                            </button>
+                            <button class="filter-chip ${this.selectedStatus === 'maintenance' ? 'active' : ''}" data-status="maintenance">
+                                Maintenance (${statusCounts.maintenance})
+                            </button>
+                            <button class="filter-chip ${this.selectedStatus === 'reserved' ? 'active' : ''}" data-status="reserved">
+                                Reserved (${statusCounts.reserved})
+                            </button>
+                        </div>
                     </div>
+
                 </div>
+            </div>
+
+            <!-- Active View Header -->
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:0.25rem 0.5rem">
+                <div>
+                    <h3 style="font-size:1.1rem;color:var(--text-primary)">${floorNames[this.selectedFloor]}</h3>
+                    <span style="font-size:0.8rem;color:var(--text-muted)">Displaying ${filtered.length} of ${state.rooms.length} Suites Matrix</span>
+                </div>
+                ${this.selectedFloor !== 'all' || this.selectedStatus !== 'all' ? `
+                    <button class="btn btn-secondary btn-sm" id="btn-reset-room-filters">✕ Reset All Filters</button>
+                ` : ''}
             </div>
 
             <!-- Room Grid Matrix -->
             <div class="room-grid">
                 ${filtered.map(room => `
-                    <div class="room-card" data-room-id="${room.id}">
+                    <div class="room-card" data-room-id="${room.id}" title="Click to open Suite ${room.id} Telemetry &amp; Controls">
                         <div class="room-card-top">
                             <div>
                                 <span class="room-number">Suite ${room.id}</span>
-                                <div class="room-type">${room.type}</div>
+                                <div class="room-type">${room.type} • F${room.floor}</div>
                             </div>
                             <span class="status-tag tag-${room.status.toLowerCase().replace(/\s+/g, '-')}">
                                 ${room.status}
@@ -66,7 +152,7 @@ class RoomsComponent {
 
                         <div class="room-guest-info">
                             <div class="room-guest-name">${room.guest || 'Available / Vacant'}</div>
-                            ${room.vip ? `<span class="badge badge-purple" style="width:fit-content;font-size:0.65rem">${room.vip}</span>` : ''}
+                            ${room.vip ? `<span class="badge badge-purple" style="width:fit-content;font-size:0.65rem">${room.vip}</span>` : '<span style="font-size:0.7rem;color:var(--text-muted)">Standard Booking</span>'}
                         </div>
 
                         <!-- Telemetry Info -->
@@ -78,7 +164,7 @@ class RoomsComponent {
                                 🔋 <span>${room.lockBattery}%</span>
                             </div>
                             <div class="telemetry-item">
-                                <span>${fmt(room.rate)}/nt</span>
+                                <span style="color:var(--emerald-primary);font-weight:700">${fmt(room.rate)}/nt</span>
                             </div>
                         </div>
 
@@ -95,13 +181,23 @@ class RoomsComponent {
                         </div>
                     </div>
                 `).join('')}
+
+                ${filtered.length === 0 ? `
+                    <div style="grid-column: 1 / -1; background:var(--bg-glass-card); border:1px dashed var(--border-medium); border-radius:var(--radius-lg); padding:3rem; text-align:center">
+                        <div style="font-size:2rem;margin-bottom:0.5rem">🏨</div>
+                        <h3>No Suites Match the Selected Criteria</h3>
+                        <p style="color:var(--text-muted);font-size:0.85rem;margin-top:0.25rem">Try switching floor levels or clearing your active filters.</p>
+                        <button class="btn btn-gold btn-sm" id="btn-reset-filters-empty" style="margin-top:1rem">Show All Suites</button>
+                    </div>
+                ` : ''}
             </div>
         `;
 
         // Floor Filter Handler
         container.querySelectorAll('.filter-chip[data-floor]').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                this.selectedFloor = e.target.dataset.floor;
+                e.stopPropagation();
+                this.selectedFloor = e.currentTarget.dataset.floor;
                 this.render(container);
             });
         });
@@ -109,47 +205,79 @@ class RoomsComponent {
         // Status Filter Handler
         container.querySelectorAll('.filter-chip[data-status]').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                this.selectedStatus = e.target.dataset.status;
+                e.stopPropagation();
+                this.selectedStatus = e.currentTarget.dataset.status;
                 this.render(container);
             });
         });
 
-        // Express Check-In Action
+        // Reset Filter Buttons
+        const resetBtn = container.querySelector('#btn-reset-room-filters');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                this.selectedFloor = "all";
+                this.selectedStatus = "all";
+                this.searchQuery = "";
+                this.render(container);
+            });
+        }
+
+        const resetEmptyBtn = container.querySelector('#btn-reset-filters-empty');
+        if (resetEmptyBtn) {
+            resetEmptyBtn.addEventListener('click', () => {
+                this.selectedFloor = "all";
+                this.selectedStatus = "all";
+                this.searchQuery = "";
+                this.render(container);
+            });
+        }
+
+        // Room Card Click -> Opens Room Control Modal
+        container.querySelectorAll('.room-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                // If button inside card was clicked, skip card click
+                if (e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
+                const roomId = card.dataset.roomId;
+                window.app.openRoomDetailModal(roomId);
+            });
+        });
+
+        // Express Check-In Action Button
         container.querySelectorAll('.btn-checkin-action').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const roomId = e.target.dataset.roomId;
+                const roomId = e.currentTarget.dataset.roomId;
                 window.app.openCheckInModal(roomId);
             });
         });
 
-        // Express Checkout Action
+        // Express Checkout Action Button
         container.querySelectorAll('.btn-checkout-action').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const roomId = e.target.dataset.roomId;
+                const roomId = e.currentTarget.dataset.roomId;
                 window.store.checkOutGuest(roomId);
-                window.app.showToast(`🚪 Express checkout completed for Room ${roomId}. Housekeeping notified.`, "info");
-                window.app.renderCurrentTab();
+                window.app.showToast(`🚪 Express checkout completed for Suite ${roomId}. Housekeeping notified.`, "info");
+                this.render(container);
             });
         });
 
-        // Mark Clean Action
+        // Mark Clean Action Button
         container.querySelectorAll('.btn-markclean-action').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const roomId = e.target.dataset.roomId;
+                const roomId = e.currentTarget.dataset.roomId;
                 window.store.updateRoomStatus(roomId, "Clean", "Clean");
-                window.app.showToast(`✨ Room ${roomId} marked Clean & Inspection Ready!`, "success");
-                window.app.renderCurrentTab();
+                window.app.showToast(`✨ Suite ${roomId} marked Clean & Inspection Ready!`, "success");
+                this.render(container);
             });
         });
 
-        // Room Details Modal
+        // Room Details Action Button
         container.querySelectorAll('.btn-room-details').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const roomId = e.target.dataset.roomId;
+                const roomId = e.currentTarget.dataset.roomId;
                 window.app.openRoomDetailModal(roomId);
             });
         });
