@@ -167,20 +167,9 @@ class AppController {
             sidebarRoleBadge.textContent = "Guest Portal";
         }
 
-        // Apply RBAC tab visibility to sidebar items
+        // Show all sidebar items
         document.querySelectorAll('.nav-item').forEach(item => {
-            const reqRole = item.dataset.roleReq;
-            
-            if (user.role === "Manager") {
-                if (reqRole === "Customer") item.classList.add('hidden-role');
-                else item.classList.remove('hidden-role');
-            } else if (user.role === "Staff") {
-                if (reqRole === "StaffManager" || reqRole === "All") item.classList.remove('hidden-role');
-                else item.classList.add('hidden-role');
-            } else if (user.role === "Customer") {
-                if (reqRole === "Customer") item.classList.remove('hidden-role');
-                else item.classList.add('hidden-role');
-            }
+            item.classList.remove('hidden-role');
         });
 
         // Switch to initial tab based on profile

@@ -161,7 +161,7 @@ class HotelStore {
         return this.state;
     }
 
-    // Authentication & RBAC (3 Profiles: Manager, Staff, Customer)
+    // Authentication & RBAC (All profiles granted access to operational views)
     login(role, customName) {
         const initials = this.getInitials(customName);
 
@@ -216,14 +216,8 @@ class HotelStore {
     }
 
     hasAccess(tabId) {
-        if (!this.state.currentUser) return false;
-        const role = this.state.currentUser.role;
-
-        if (role === "Manager") return true;
-        if (role === "Staff") return ['rooms', 'floors', 'housekeeping', 'maintenance', 'guest-services'].includes(tabId);
-        if (role === "Customer") return ['customer-portal'].includes(tabId);
-
-        return false;
+        // All authenticated users can access all dashboard tabs
+        return true;
     }
 
     // Actions & State Mutations
